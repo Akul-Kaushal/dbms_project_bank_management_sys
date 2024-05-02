@@ -1,5 +1,7 @@
 READ THIS BEFORE PROCEEDING TO MAKING CHANES IN FILE
 
+download gitbash
+
 open bash 
 
 >> git clone <https://github.com/Akul-Kaushal/dbms_project_bank_management_sys.git/>
