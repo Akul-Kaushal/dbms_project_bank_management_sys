@@ -9,11 +9,16 @@ declare
 
 
 	procedure f_d_in is
-		d_id Fixed_deposit.deposit_id%type;
-		s_d Fixed_deposit.start_date%type;
-		a_t Fixed_deposit.amount%type;
-		i_r Fixed_deposit.deposit_id%type;
+		rec Fixed_deposit%rowtype;
+	begin
 
+	procedure sav_acc is
+		rec Savings_account%rowtype;
+	begin
+
+	procedure loans is
+		rec Loans%rowtype;
+	begin
 
 	procedure t_his is 
 		rec T_history%rowtype;
