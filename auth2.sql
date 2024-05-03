@@ -6,6 +6,9 @@ declare
 	err_num number;
 	err_msg char(100);
 
+	config_id Customer.customer_id%type;
+	aconfig_id User_account.account_id%type;
+
 
 	invalid_entry exception;
 	
@@ -17,15 +20,11 @@ declare
 	cursor c1(a number) is select * from Customer where customer_id = a;
 	cursor c2(a varchar,b number) is select * from SSID where password_ = a and exists (select * from Customer where customer_id = b);
 	cursor c3 is select customer_id from Customer;
+	cursor c4(a number) is select * from User_account where Customer_id = a;
 
-
-	procedure t_his is 
-		rec T_history%rowtype;
-	begin
-		
-
-
-
+	--procedure t_his is 
+	--	rec T_history%rowtype;
+	--begin
 
 	procedure password_check(login_arg in number) is
     		password_var SSID.password_%type;
@@ -57,6 +56,7 @@ declare
 		password SSID%rowtype;
 	begin
 		login_id := 100001;
+		config_id :=  login_id;
         	open c1(login_id);
 
 		loop
@@ -166,6 +166,7 @@ declare
 		);
 	end;
 		
+	
 
 	procedure menu is	
 		choice_m char(1) := upper('a');
@@ -197,10 +198,19 @@ declare
 		end case;
 	end; 		
 
-
-
-
-
+	procedure linking_cust_acc_id  is
+		rec User_account%rowtype;
+	begin
+		open c4(config_id);
+		loop 
+			fetch c4 into rec;
+			exit when c4%found;
+		end loop;
+			
+		aconfig_id := rec.account_id;
+		dbms_output.put_line(aconfig_id);
+		close c4;
+	end;
 	
 
 begin
@@ -223,6 +233,12 @@ begin
 
 	dbms_output.put_line(' ');
 	dbms_output.put_line('Welcome to Bank Management system');
+	-- dbms_output.put_line(config_id);
+
+
+	linking_cust_acc_id();
+
+	dbms_output.put_line(aconfig_id);
 
 	menu();
 
