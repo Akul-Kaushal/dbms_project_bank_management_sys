@@ -129,7 +129,7 @@ create table UPI_link
 
 create table UPI_SSID
 (
-	upi_id varchar(20),
+	upi_id varchar(20) constraint upi_ss_uq_id unique,
 	constraint up_ss_fk 
 	foreign key(upi_id) references UPI(upi_id),
 	password_ varchar(30),
