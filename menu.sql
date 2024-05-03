@@ -15,6 +15,10 @@ declare
 		i_r Fixed_deposit.deposit_id%type;
 
 
+	procedure t_his is 
+		rec T_history%rowtype;
+	begin
+		
 
 	procedure menu is	
 	choice_m char(1) := upper('a');
@@ -33,11 +37,12 @@ declare
 		
 			when 'D' then
 				dbms_output.put_line('Transaction History');
-		
-			when 'C' then 
-				dbms_output.put_line('Money Transfer To Account');
+				t_his();
 		
 			when 'E' then 
+				dbms_output.put_line('Money Transfer To Account');
+		
+			when 'F' then 
 				dbms_output.put_line('UPI Transaction');
 				
 			else
