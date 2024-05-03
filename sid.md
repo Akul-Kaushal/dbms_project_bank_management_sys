@@ -1,1 +1,1 @@
-Coonection to sid laptop done
+Connection to sid laptop done
