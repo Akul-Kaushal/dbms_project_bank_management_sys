@@ -3,11 +3,26 @@ declare
 
 	choice varchar(1);
 	validate_var varchar(1);
+	err_num number;
+	err_msg char(100);
+
+
+	invalid_entry exception;
+	
+	
+
+
 
 
 	cursor c1(a number) is select * from Customer where customer_id = a;
 	cursor c2(a varchar,b number) is select * from SSID where password_ = a and exists (select * from Customer where customer_id = b);
 	cursor c3 is select customer_id from Customer;
+
+
+
+
+
+
 
 	procedure password_check(login_arg in number) is
     		password_var SSID.password_%type;
@@ -22,23 +37,24 @@ declare
 		end loop;
 		
 
-		if c2%found then
-				dbms_output.put_line('found');		
-		else
-				dbms_output.put_line('not found');
-		end if;
+		-- if c2%found then
+				-- dbms_output.put_line('found');		
+		-- else
+				-- dbms_output.put_line('not found');
+		--end if;
+		
+		dbms_output.put_line(' ');
 		close c2;
 		
 	end;
 
 	procedure login_check is
     		login_id number;
-			-- valid_id Customer%rowtype;
 		rec Customer%rowtype;
 		password SSID%rowtype;
 	begin
-	login_id := 100001;
-        open c1(login_id);
+		login_id := 100001;
+        	open c1(login_id);
 
 		loop
             		fetch c1 into rec;
@@ -147,6 +163,41 @@ declare
 		);
 	end;
 		
+
+	procedure menu is	
+		choice_m char(1) := upper('a');
+	begin     
+		
+		case choice_m
+			when 'A' then 
+				dbms_output.put_line('Fixed Deposit');
+				-- f_d_in();
+			
+			when 'B' then
+				dbms_output.put_line('Loans');
+
+			when 'C' then
+				dbms_output.put_line('Saving Account');
+		
+			when 'D' then
+				dbms_output.put_line('Transaction History');
+				-- t_his();
+		
+			when 'E' then 
+				dbms_output.put_line('Money Transfer To Account');
+		
+			when 'F' then 
+				dbms_output.put_line('UPI Transaction');
+				
+			else
+				raise invalid_entry;
+		end case;
+	end; 		
+
+
+
+
+
 	
 
 begin
@@ -160,12 +211,33 @@ begin
 
 		when 'n' then
 			sign_up();
-			dbms_output.put_line('no');
+			-- dbms_output.put_line('no');
 
 
 		else
 			dbms_output.put_line('infinity');
 	end case;
+
+	dbms_output.put_line(' ');
+	dbms_output.put_line('Welcome to Bank Management system');
+
+	menu();
+
+
+exception
+	
+	when invalid_entry then
+		dbms_output.put_line('Invalid Entry');
+		dbms_output.put_line('Terminating Session');
+		dbms_output.put_line('Refersh Session');
+
+	when others then
+		dbms_output.put_line('Out of Bound Error');
+		dbms_output.put_line('Check Code once again');
+		err_num:= sqlcode;
+		err_msg:= substr(sqlerrm,1,100);
+		insert into errors
+		values(err_num,err_msg);
 		
 end;
 /
