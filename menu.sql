@@ -8,20 +8,8 @@ declare
 	err_msg char(100);
 
 
-	procedure f_d_in is
+	procedure f_d_in() is
 		rec Fixed_deposit%rowtype;
-	begin
-
-	procedure sav_acc is
-		rec Savings_account%rowtype;
-	begin
-
-	procedure loans is
-		rec Loans%rowtype;
-	begin
-
-	procedure t_his is 
-		rec T_history%rowtype;
 	begin
 		
 
