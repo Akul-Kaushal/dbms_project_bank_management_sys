@@ -19,7 +19,10 @@ declare
 	cursor c3 is select customer_id from Customer;
 
 
-
+	procedure t_his is 
+		rec T_history%rowtype;
+	begin
+		
 
 
 
