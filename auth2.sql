@@ -343,8 +343,8 @@ declare
 	begin
 		
 		
-		acc_id := 1001;
-		fd_id := 1006;
+		acc_id := 1003;
+		fd_id := 1010;
 		amt := 100000.00;
 		i_r := 7.20;
 		tenure := 15;
