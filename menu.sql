@@ -6,19 +6,40 @@ declare
 	
 	err_num number;
 	err_msg char(100);
+	config_id Customer.customer_id%type;
+	aconfig_id User_account.account_id%type;
 
-
-	procedure f_d_in is
-		d_id Fixed_deposit.deposit_id%type;
+	procedure f_d_in (decide in number) is 
+		fd_id Fixed_deposit.deposit_id%type;
 		s_d Fixed_deposit.start_date%type;
-		a_t Fixed_deposit.amount%type;
-		i_r Fixed_deposit.deposit_id%type;
+		amt Fixed_deposit.amount%type;
+		i_r Fixed_deposit.interest_rate%type;
+		tenure Fixed_deposit.tenure%type;
+		m_d Fixed_deposit.maturity_date%type;
+		acc_id Fixed_deposit.account_id%type;
+		status Fixed_deposit.status_%type;
 
-
-	procedure t_his is 
-		rec T_history%rowtype;
+		rec Fixed_deposit%rowtype;
 	begin
 		
+		
+		acc_id := aconfig_id;
+		fd_id := 1004;
+		amt := 100000.00;
+		i_r := 7.20;
+		
+
+		if (decide = 1) then
+			insert into Fixed_deposit (deposit_id, amount, interest_rate)
+			values
+			(
+				fd_id,
+				amt,
+				i_r	
+			);
+				
+		end if;
+	end;
 
 	procedure menu is	
 	choice_m char(1) := upper('a');
@@ -37,7 +58,7 @@ declare
 		
 			when 'D' then
 				dbms_output.put_line('Transaction History');
-				t_his();
+				-- t_his();
 		
 			when 'E' then 
 				dbms_output.put_line('Money Transfer To Account');

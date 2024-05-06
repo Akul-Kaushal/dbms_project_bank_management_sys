@@ -255,8 +255,8 @@ exception
 		dbms_output.put_line('Check Code once again');
 		err_num:= sqlcode;
 		err_msg:= substr(sqlerrm,1,100);
-		insert into errors
-		values(err_num,err_msg);
+		-- insert into errors
+		-- values(err_num,err_msg);
 		
 end;
 /
