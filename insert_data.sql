@@ -38,6 +38,12 @@ insert into T_history values (5001, 1001, 1002, 200.00, 'UPI', SYSTIMESTAMP);
 insert into T_history values (5002, 1002, 1003, 150.00, 'Account', SYSTIMESTAMP);
 insert into T_history values (5003, 1001, 1001, 300.00, 'UPI', SYSTIMESTAMP);
 
+
+-- Data for UPI_link table
+insert into UPI_link values ('john.doe@oksbi', 1001);
+insert into UPI_link values ('jane.smith@paytm', 1002);
+insert into UPI_link values ('alex.lee@paypal', 1003);
+
 -- Data for UPI table
 insert into UPI values ('john.doe@oksbi', 1000.00);
 insert into UPI values ('jane.smith@paytm', 1500.00);
@@ -48,7 +54,4 @@ insert into UPI_SSID values ('john.doe@oksbi', 'Password@123');
 insert into UPI_SSID values ('jane.smith@paytm', 'SecureP@ss456');
 insert into UPI_SSID values ('alex.lee@paypal', 'StrongP@ss789');
 
--- Data for UPI_link table
-insert into UPI_link values ('john.doe@oksbi', 1001);
-insert into UPI_link values ('jane.smith@paytm', 1002);
-insert into UPI_link values ('alex.lee@paypal', 1003);
+
