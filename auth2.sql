@@ -11,6 +11,7 @@ declare
 
 
 	invalid_entry exception;
+	negative_balance exception;
 	
 	
 
@@ -22,8 +23,8 @@ declare
 	cursor c3 is select customer_id from Customer;
 	cursor c4(a number) is select * from User_account where Customer_id = a;
 	cursor c5 is select transaction_id from T_history;
-	-- cursor c6 is select account_id from User_account;
-
+	cursor c6 is select * from T_history;
+	cursor c7(d number) is select balance from Saving_account where account_id = d;
 
 
 	function roulette return number is
@@ -32,18 +33,56 @@ declare
 	end;
 		
 
-	procedure t_his(decide in number) is 
+	procedure m_trans is
+		pa_r Money_account.payer%type;
+		py_r Money_account.payee%type;
+		amt Money_account.amount%type;
+
 		t_id T_history.transaction_id%type;
-		pa_no T_history.payer%type;
-		py_no T_history.payee%type;
 		a_t T_history.amount%type;
 		t_y T_history.type_%type;
 		c_d T_history.cap_date%type;
 
 		rec_t T_history.transaction_id%type;
-		copy_rec T_history.transaction_id%type;
+		rec_m Saving_account.balance%type;
+
+
 	begin
+		pa_r := aconfig_id;
+		py_r := 1002;
+		amt := 100;
 		
+		insert into Money_account
+		values (
+			pa_r,
+			py_r,
+			amt
+		);
+		
+		
+		open c7(pa_r);
+		loop 
+			fetch c7 into rec_m;
+			exit when c7%found;
+		end loop;
+		
+		rec_m := rec_m - amt;
+
+		if (rec_m < 0) then
+			dbms_output.put_line('no negative balance');
+			raise negative_balance;
+
+		else
+			update Saving_account 
+			set balance = balance - amt
+			where account_id = pa_r;
+		
+			update Saving_account 
+			set balance = balance + amt 
+			where account_id = py_r;
+		end if;
+		close c7;
+
 		open c5;
 		loop
 			fetch c5 into rec_t;
@@ -53,26 +92,37 @@ declare
 		close c5;
 		
 		t_id := rec_t + 1;
-		pa_no := aconfig_id;
-		py_no := 1001;
-		a_t := 10000;
+		pa_r := aconfig_id;
+		py_r := 1001;
+		amt := 10000;
 		
 
-		if (decide = 1) then
-			t_y := 'Account';
+		t_y := 'Account';
 			insert into T_history
 			values
 			(
 				t_id,
-				pa_no,
-				py_no,
-				a_t,
+				pa_r,
+				py_r,
+				amt,
 				t_y,
 				current_timestamp
 			);
-				
-		end if;
+	end;
 
+	procedure t_his(decide in number) is 
+
+		rec_t T_history%rowtype;
+	begin
+		
+		open c6;
+		loop
+			fetch c6 into rec_t;
+			-- dbms_output.put_line(rec_t);
+			dbms_output.put_line('Send By :: ' || rec_t.payer || ' to ' || rec_t.payee || ' reference :: ' || rec_t.transaction_id); 
+			exit when c5%notfound;
+		end loop;
+		close c5;
 		
 	end;
 	
@@ -253,7 +303,7 @@ declare
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('d');
+		choice_m char(1) := upper('e');
 		demo number;
 	begin     
 		
@@ -276,8 +326,9 @@ declare
 		
 			when 'E' then 
 				dbms_output.put_line('Money Transfer To Account');
+				m_trans();
 				
-		
+				
 			when 'F' then 
 				dbms_output.put_line('UPI Transaction');
 				
@@ -345,6 +396,10 @@ exception
 		dbms_output.put_line('Invalid Entry');
 		dbms_output.put_line('Terminating Session');
 		dbms_output.put_line('Refersh Session');
+
+	when negative_balance then 
+		dbms_output.put_line('Cannot Proceed');
+		dbms_output.put_line('Refresh Session');
 
 	when others then
 		dbms_output.put_line('Out of Bound Error');
