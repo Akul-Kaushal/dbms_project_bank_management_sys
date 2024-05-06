@@ -9,7 +9,7 @@ declare
 	config_id Customer.customer_id%type;
 	aconfig_id User_account.account_id%type;
 
-	procedure f_d_in (decide in number) is 
+	procedure f_d_in is 
 		fd_id Fixed_deposit.deposit_id%type;
 		s_d Fixed_deposit.start_date%type;
 		amt Fixed_deposit.amount%type;
@@ -24,25 +24,28 @@ declare
 		
 		
 		acc_id := aconfig_id;
-		fd_id := 1004;
+		fd_id := 1005;
 		amt := 100000.00;
 		i_r := 7.20;
+		tenure := 15;
+		s_d := to_char(sysdate, 'yyyy-mm-dd');
+		m_d := to_char(sysdate+15,'yyyy-mm-dd');
 		
-
-		if (decide = 1) then
-			insert into Fixed_deposit (deposit_id, amount, interest_rate)
+			insert into Fixed_deposit (deposit_id, amount, interest_rate, start_date, tenure, maturity_date)
 			values
 			(
 				fd_id,
 				amt,
-				i_r	
+				i_r,
+				s_d,
+				tenure,
+				m_d	
 			);
 				
-		end if;
 	end;
 
 	procedure menu is	
-	choice_m char(1) := upper('a');
+	choice_m char(1) := upper('A');
 	begin     
 		
 		case choice_m

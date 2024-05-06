@@ -125,6 +125,8 @@ declare
 		close c5;
 		
 	end;
+
+	
 	
 	procedure f_d_in is 
 		fd_id Fixed_deposit.deposit_id%type;
