@@ -113,6 +113,7 @@ create table T_history
 create table UPI_link
 (
 	upi_id varchar(20) constraint upi_h_pk primary key,
+	constraint up_ch_id check (upi_id like '%@oksbi' or upi_id like '%@paytm' or upi_id like '%@paypal'),
 	account_id number(4),
 	constraint up_l_fk_2
 	foreign key(account_id) references User_account(account_id) on delete cascade
@@ -120,7 +121,7 @@ create table UPI_link
 
 create table UPI 
 (
-	upi_id varchar(20) constraint up_ch_id check (upi_id like '%@oksbi' or upi_id like '%@paytm' or upi_id like '%@paypal'),
+	upi_id varchar(20),
 	constraint up_l_fk_1 
 	foreign key(upi_id) references UPI_link(upi_id) on delete cascade,
 	amount number(8,2)    

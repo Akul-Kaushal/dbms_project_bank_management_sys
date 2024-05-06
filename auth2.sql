@@ -30,7 +30,10 @@ declare
 	cursor c6 is select * from T_history;
 	cursor c7(d number) is select balance from Saving_account where account_id = d;
 	cursor c8 is select account_id from User_account;
-	cursor c9(a char, b char) is select * from UPI_SSID where upi_id like a;
+	cursor c9(a varchar, b varchar) is select * from UPI_SSID where upi_id like a;
+	cursor c10(a varchar) is select account_id from UPI_link where upi_id = a;
+	cursor c11 is select loan_id from Loans;
+	cursor c12 is select saving_account_id from Saving_account;
 
 
 
@@ -45,7 +48,10 @@ declare
 		loop
 			exit when c9%found;
 		end loop;
-		des_arg := 1;
+
+		if c9%found then
+			des_arg := 1;
+		end if;
 
 		close c9;
 	end;
@@ -55,14 +61,89 @@ declare
 		u_id UPI.upi_id%type;
 		amt UPI.amount%type; 
 		decision number;
+			
+		rec UPI_link.account_id%type;
+		rec_b Saving_account.balance%type;
+
+
+		t_id T_history.transaction_id%type;
+		a_t T_history.amount%type;
+		t_y T_history.type_%type;
+		c_d T_history.cap_date%type;
+
+		rec_t T_history.transaction_id%type;
+		rec_m Saving_account.balance%type;
+
+		pa_r Money_account.payer%type;
+		py_r Money_account.payee%type;
+
+
 	begin
 		u_id := 'john.doe@oksbi';
 		upi_pass(u_id,decision);
 			
 		if (decision = 1) then 
 			amt := 100;
-			insert into UPI 
-			values(u_id,amt);
+			
+			open c10(u_id);
+			loop
+				fetch c10 into rec;
+				exit when c10%found;
+			end loop;
+			 
+			if c10%found then
+				insert into UPI 
+				values(u_id,amt);
+				
+				open c7(aconfig_id);
+				loop
+					fetch c7 into rec_b;
+					exit when c7%found;
+				end loop;
+				close c7;
+				
+
+				rec_b := rec_b - amt;
+				
+				if rec_b<=0 then
+					raise sav_acc_err;
+				else
+
+					update Saving_account
+					set balance = balance + amt
+					where account_id = rec;
+
+					update Saving_account
+					set balance = balance - amt
+					where account_id = aconfig_id;
+
+					open c5;
+					loop
+						fetch c5 into rec_t;
+						-- dbms_output.put_line(rec_t);
+						exit when c5%notfound;
+					end loop;
+					close c5;
+		
+					t_id := rec_t + 1;
+					pa_r := aconfig_id;
+					py_r := rec;
+		
+
+					t_y := 'UPI';
+					insert into T_history
+					values
+					(
+					t_id,
+					pa_r,
+					py_r,
+					amt,
+					t_y,
+					current_timestamp
+					);
+
+				end if;
+			end if;
 		end if;
 	end;
 
@@ -75,12 +156,20 @@ declare
     		sav_acc_id Saving_account.saving_account_id%type;
        		bal Saving_account.balance%type;
     		o_d Saving_account.open_date%type;
-       		acc_id Fixed_deposit.account_id%type;
+       		acc_id Saving_account.account_id%type;
     		s_t Saving_account.status_%type;
     
-    		rec Saving_account%rowtype;
+    		rec Saving_account.saving_account_id%type;
 	begin   
-    		sav_acc_id := 200007;
+
+		open c12;
+		loop
+			fetch c12 into rec;
+			exit when c12%notfound;
+		end loop;
+		close c12;
+		
+    		sav_acc_id := rec + 1;
     		acc_id := aconfig_id;
     		bal := 100000.00;
     		s_t := 'open';
@@ -91,9 +180,52 @@ declare
         		sav_acc_id,
 			acc_id,
 			bal,
-			to_date(sysdate,'yyyy-mm-dd'),
+			sysdate,
 			s_t 
     		);     
+	end;
+	
+	procedure loans_in is
+		l_id Loans.loan_id%type;
+		acc_id Loans.account_id%type;
+		amt Loans.amount%type;
+		i_r Loans.interest_rate%type;
+		dur Loans.duration%type;
+		r_bal Loans.r_balance%type;
+		p_freq Loans.p_frequency%type;
+		pay number;		
+		
+		rec Loans.loan_id%type;
+	begin
+		pay := 8000;
+
+		open c11;
+		loop
+			fetch c11 into rec;
+			exit when c11 %notfound;
+		end loop;
+		close c11;
+
+		l_id := rec+1;
+		acc_id := 1001;
+		amt := 50000;
+		i_r := 3.25;
+		dur := 10;
+		r_bal := amt - pay;
+		p_freq := 'month';
+		
+		insert into Loans 
+		values (
+			l_id,
+			acc_id,
+			amt,
+			i_r,
+			to_date(sysdate,'yyyy-mm-dd'),
+			to_date(sysdate+dur,'yyyy-mm-dd'),
+			dur,
+			r_bal,
+			p_freq
+		);
 	end;
 
 		
@@ -306,8 +438,9 @@ declare
     		rec4 User_account.account_id%type;
 
 
-		u_id UPI.upi_id%type;
+		u_id UPI_link.upi_id%type;
 		pass_2 UPI_SSID.password_%type;
+		acc_id_2 UPI_link.account_id%type;
 
 		
 	begin
@@ -315,7 +448,7 @@ declare
     
 		loop
 			fetch c3 into rec3;
-			dbms_output.put_line(rec3);
+			-- dbms_output.put_line(rec3);
 			exit when c3%notfound;
 		end loop;
     		close c3;
@@ -384,9 +517,10 @@ declare
 
 		u_id := 'imishan@oksbi';
 		pass_2 := 'Hunt3r1009i#@';
-		
+		acc_id_2 := acc_id;
+
 		insert into UPI_link
-		values(u_id,acc_id);
+		values(u_id,acc_id_2);
 
 		insert into UPI_SSID
 		values(u_id,pass_2);
@@ -397,7 +531,7 @@ declare
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('f');
+		choice_m char(1) := upper('c');
 		demo number;
 	begin     
 		
@@ -408,8 +542,10 @@ declare
 			
 			when 'B' then
 				dbms_output.put_line('Loans');
+				loans_in();
 
 			when 'C' then
+				dbms_output.put_line(demo);
 				if (demo = 1) then 
 					dbms_output.put_line('Saving Account');
 					sav_acc_in();
@@ -419,7 +555,6 @@ declare
 		
 			when 'D' then
 				dbms_output.put_line('Transaction History');
-				-- t_his();
 				t_his();
 		
 			when 'E' then 
