@@ -3,6 +3,9 @@ declare
 
 	choice varchar(1);
 	validate_var varchar(1);
+	demo number := 0;
+	
+
 	err_num number;
 	err_msg char(100);
 
@@ -12,6 +15,7 @@ declare
 
 	invalid_entry exception;
 	negative_balance exception;
+	sav_acc_err exception;
 	
 	
 
@@ -25,12 +29,73 @@ declare
 	cursor c5 is select transaction_id from T_history;
 	cursor c6 is select * from T_history;
 	cursor c7(d number) is select balance from Saving_account where account_id = d;
+	cursor c8 is select account_id from User_account;
+	cursor c9(a char, b char) is select * from UPI_SSID where upi_id like a;
 
 
-	function roulette return number is
+
+	procedure upi_pass(ui_arg in char, des_arg out number) is
+		pass_ UPI_SSID.password_%type;
+
+		
 	begin
-		return 1;
+		pass_ := 'Password@123';
+
+		open c9(ui_arg,pass_);
+		loop
+			exit when c9%found;
+		end loop;
+		des_arg := 1;
+
+		close c9;
 	end;
+
+
+	procedure upi_in is 
+		u_id UPI.upi_id%type;
+		amt UPI.amount%type; 
+		decision number;
+	begin
+		u_id := 'john.doe@oksbi';
+		upi_pass(u_id,decision);
+			
+		if (decision = 1) then 
+			amt := 100;
+			insert into UPI 
+			values(u_id,amt);
+		end if;
+	end;
+
+
+
+
+
+
+	procedure sav_acc_in is 
+    		sav_acc_id Saving_account.saving_account_id%type;
+       		bal Saving_account.balance%type;
+    		o_d Saving_account.open_date%type;
+       		acc_id Fixed_deposit.account_id%type;
+    		s_t Saving_account.status_%type;
+    
+    		rec Saving_account%rowtype;
+	begin   
+    		sav_acc_id := 200007;
+    		acc_id := aconfig_id;
+    		bal := 100000.00;
+    		s_t := 'open';
+    
+    		insert into Saving_account
+    		values
+    		(
+        		sav_acc_id,
+			acc_id,
+			bal,
+			to_date(sysdate,'yyyy-mm-dd'),
+			s_t 
+    		);     
+	end;
+
 		
 
 	procedure m_trans is
@@ -110,8 +175,12 @@ declare
 			);
 	end;
 
-	procedure t_his(decide in number) is 
 
+
+
+
+
+	procedure t_his is 
 		rec_t T_history%rowtype;
 	begin
 		
@@ -154,7 +223,7 @@ declare
 				fd_id,
 				amt,
 				i_r	
-			);
+		);
 	end;
 
 
@@ -235,6 +304,12 @@ declare
     		acc_type User_account.account_type%type;
     		acc_status User_account.status_%type;
     		rec4 User_account.account_id%type;
+
+
+		u_id UPI.upi_id%type;
+		pass_2 UPI_SSID.password_%type;
+
+		
 	begin
     		open c3;
     
@@ -288,8 +363,15 @@ declare
         	pass_
     		);
 
-    		acc_id := 1004;
-    		acc_type := 'Retirement Account';
+		open c8;
+		loop 
+			fetch c8 into rec4;
+			exit when c8%notfound;
+		end loop;
+		close c8;
+
+    		acc_id := rec4+1;
+    		acc_type := 'Saving Account';
     		acc_status := 'open';
     		insert into User_account
     		values
@@ -299,32 +381,46 @@ declare
         	acc_type,
         	acc_status
     		);
+
+		u_id := 'imishan@oksbi';
+		pass_2 := 'Hunt3r1009i#@';
+		
+		insert into UPI_link
+		values(u_id,acc_id);
+
+		insert into UPI_SSID
+		values(u_id,pass_2);
+		
 	end;
 
 		
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('e');
+		choice_m char(1) := upper('f');
 		demo number;
 	begin     
 		
 		case choice_m
 			when 'A' then 
 				dbms_output.put_line('Fixed Deposit');
-				-- f_d_in();
+				f_d_in();
 			
 			when 'B' then
 				dbms_output.put_line('Loans');
 
 			when 'C' then
-				dbms_output.put_line('Saving Account');
+				if (demo = 1) then 
+					dbms_output.put_line('Saving Account');
+					sav_acc_in();
+				else
+					raise sav_acc_err;
+				end if;
 		
 			when 'D' then
 				dbms_output.put_line('Transaction History');
 				-- t_his();
-				demo := roulette();
-				t_his(demo);
+				t_his();
 		
 			when 'E' then 
 				dbms_output.put_line('Money Transfer To Account');
@@ -333,6 +429,7 @@ declare
 				
 			when 'F' then 
 				dbms_output.put_line('UPI Transaction');
+				upi_in();
 				
 			else
 				raise invalid_entry;
@@ -367,11 +464,13 @@ begin
 	case choice
 		when 'y' then
         		login_check();
+			demo := 0;
 			-- dbms_output.put_line('yes');
 
 		when 'n' then
 			sign_up();
-			dbms_output.put_line('no');
+			demo := 1;
+			-- dbms_output.put_line('no');
 
 
 		else
@@ -402,6 +501,14 @@ exception
 	when negative_balance then 
 		dbms_output.put_line('Cannot Proceed');
 		dbms_output.put_line('Refresh Session');
+
+	when sav_acc_err then
+		dbms_output.put_line('Already Having Saving Account Associated with this account');
+		dbms_output.put_line('Refresh Session');
+		err_num := 109;
+		err_msg := 'Already Having Saving Account Associated with this account';
+		insert into errors
+		values(err_num,err_msg);
 
 	when others then
 		dbms_output.put_line('Out of Bound Error');

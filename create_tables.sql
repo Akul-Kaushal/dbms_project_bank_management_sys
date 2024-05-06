@@ -25,7 +25,7 @@ constraint acc_ch_id
 check (length(account_id) = 4),
 customer_id number,
 constraint acc_fk_cus
-foreign key (customer_id) references Customer (customer_id),
+foreign key (customer_id) references Customer (customer_id) on delete set null,
 account_type varchar(50) constraint acc_ch_ty check(account_type like  '%Saving Account%' or  account_type like '%Certificate Of Deposit%' or  account_type like '%Fixed Deposit%' or  account_type like '%Retirement Account%%'),
 status_ varchar(30) constraint acc_ch_st check (status_ in ('open','closed','froze'))
 );
@@ -34,7 +34,7 @@ status_ varchar(30) constraint acc_ch_st check (status_ in ('open','closed','fro
 
 create table SSID (
     customer_id number,
-    constraint ssid_fk_cus foreign key (customer_id) references customer(customer_id),
+    constraint ssid_fk_cus foreign key (customer_id) references customer(customer_id) on delete cascade,
     constraint ssid_uq unique (customer_id),
     password_ varchar(50),
     constraint ssid_ch_ps check (
@@ -52,7 +52,7 @@ create table Saving_account (
     check (length(saving_account_id)=6),
     account_id number,
     constraint sav_acc_fk_cus
-    foreign key (account_id) references User_account(account_id),
+    foreign key (account_id) references User_account(account_id) on delete cascade,
     balance number(10,2),    
     open_date date,
     status_ varchar(30) constraint sav_acc_ch_st check (status_ in ('open','closed','froze'))
@@ -109,29 +109,28 @@ create table T_history
 	type_ varchar(8) constraint t_h_ch_ty check (type_ in ('UPI','Account')),
 	cap_date timestamp           --- insert sysdate while transfer
 );
-create table UPI 
-(
-	upi_id varchar(20) constraint upi_h_pk primary key,
-	constraint up_ch_id
-	check (upi_id like '%@oksbi' or upi_id like '%@paytm' or upi_id like '%@paypal'),
-	amount number(8,2)    
-);
 
 create table UPI_link
 (
-	upi_id varchar(20),
-	constraint up_l_fk_1 
-	foreign key(upi_id) references UPI(upi_id),
-	account_id number(4) constraint upi_link_ch_acc_id unique,
+	upi_id varchar(20) constraint upi_h_pk primary key,
+	account_id number(4),
 	constraint up_l_fk_2
-	foreign key(account_id) references User_account(account_id)
+	foreign key(account_id) references User_account(account_id) on delete cascade
+);
+
+create table UPI 
+(
+	upi_id varchar(20) constraint up_ch_id check (upi_id like '%@oksbi' or upi_id like '%@paytm' or upi_id like '%@paypal'),
+	constraint up_l_fk_1 
+	foreign key(upi_id) references UPI_link(upi_id) on delete cascade,
+	amount number(8,2)    
 );
 
 create table UPI_SSID
 (
-	upi_id varchar(20) constraint upi_ss_uq_id unique,
+	upi_id varchar(20),
 	constraint up_ss_fk 
-	foreign key(upi_id) references UPI(upi_id),
+	foreign key(upi_id) references UPI_link(upi_id) on delete cascade,
 	password_ varchar(30),
     constraint up_ss_ch_ps check (
         length(password_) > 8 and 
@@ -141,3 +140,4 @@ create table UPI_SSID
         regexp_like(password_, '[A-Z]')
     )
 );
+
