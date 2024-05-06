@@ -21,7 +21,7 @@ declare
 	cursor c2(a varchar,b number) is select * from SSID where password_ = a and exists (select * from Customer where customer_id = b);
 	cursor c3 is select customer_id from Customer;
 	cursor c4(a number) is select * from User_account where Customer_id = a;
-	--cursor c5 is select * from T_history;
+	cursor c5 is select transaction_id from T_history;
 	-- cursor c6 is select account_id from User_account;
 
 
@@ -40,12 +40,19 @@ declare
 		t_y T_history.type_%type;
 		c_d T_history.cap_date%type;
 
-		rec T_history%rowtype;
+		rec_t T_history.transaction_id%type;
+		copy_rec T_history.transaction_id%type;
 	begin
 		
+		open c5;
+		loop
+			fetch c5 into rec_t;
+			-- dbms_output.put_line(rec_t);
+			exit when c5%notfound;
+		end loop;
+		close c5;
 		
-		
-		t_id := 1003;
+		t_id := rec_t + 1;
 		pa_no := aconfig_id;
 		py_no := 1001;
 		a_t := 10000;
@@ -65,8 +72,38 @@ declare
 			);
 				
 		end if;
-	end;
 
+		
+	end;
+	
+	procedure f_d_in is 
+		fd_id Fixed_deposit.deposit_id%type;
+		s_d Fixed_deposit.start_date%type;
+		amt Fixed_deposit.amount%type;
+		i_r Fixed_deposit.interest_rate%type;
+		tenure Fixed_deposit.tenure%type;
+		m_d Fixed_deposit.maturity_date%type;
+		acc_id Fixed_deposit.account_id%type;
+		status Fixed_deposit.status_%type;
+
+		rec Fixed_deposit%rowtype;
+	begin
+		
+		
+		acc_id := aconfig_id;
+		fd_id := 1004;
+		amt := 100000.00;
+		i_r := 7.20;
+		
+
+		insert into Fixed_deposit (deposit_id, amount, interest_rate)
+		values
+		(
+				fd_id,
+				amt,
+				i_r	
+			);
+	end;
 
 
 	procedure password_check(login_arg in number) is
@@ -131,79 +168,86 @@ declare
     		d_o_b Customer.date_of_birth%type;
     		gen Customer.gender%type;
     		h_n Customer.house_no%type;
-    st Customer.street%type;
-    ct Customer.city%type;
-    p_c Customer.postal_code%type;
-    sta Customer.state_%type;
-    e Customer.email%type;
-    p_n Customer.phone_no%type;
-    i_p_t Customer.id_proof_type%type;
-    i_p_n Customer.id_proof_number%type;
+    		st Customer.street%type;
+    		ct Customer.city%type;
+    		p_c Customer.postal_code%type;
+    		sta Customer.state_%type;
+    		e Customer.email%type;
+    		p_n Customer.phone_no%type;
+    		i_p_t Customer.id_proof_type%type;
+    		i_p_n Customer.id_proof_number%type;
     
-    pass_ SSID.password_%type;
+    		pass_ SSID.password_%type;
 
-    acc_id User_account.account_id%type;
-    acc_type User_account.account_type%type;
-    acc_status User_account.status_%type;
-    rec4 User_account.account_id%type;
-begin
-    open c3;
-    fetch c3 into rec3;
-    close c3;
+    		acc_id User_account.account_id%type;
+    		acc_type User_account.account_type%type;
+    		acc_status User_account.status_%type;
+    		rec4 User_account.account_id%type;
+	begin
+    		open c3;
+    
+		loop
+			fetch c3 into rec3;
+			dbms_output.put_line(rec3);
+			exit when c3%notfound;
+		end loop;
+    		close c3;
 
-    n_cust := rec3 + 1;
-    f_name := 'hunt';
-    l_name := '3r';
-    d_o_b  :=  TO_DATE('1990-09-15', 'YYYY-MM-DD') ;
-    gen := 'Female';
-    h_n := 110;
-    st := 'Rosmary Street';
-    ct := 'Virginia';
-    p_c := 145002;
-    sta := 'West Virginia';
-    e := 'dove@icloud.com';
-    p_n := '987-654-3210';
-    i_p_t := 'passport';
-    i_p_n := 'alok19990';
+    		n_cust := rec3 + 1;
+		config_id := n_cust;
+    		f_name := 'hunt';
+    		l_name := '3r';
+    		d_o_b  :=  TO_DATE('1990-09-15', 'YYYY-MM-DD') ;
+    		gen := 'Female';
+    		h_n := 110;
+    		st := 'Rosmary Street';
+    		ct := 'Virginia';
+    		p_c := 145002;
+    		sta := 'West Virginia';
+    		e := 'dove@icloud.com';
+    		p_n := '987-654-3210';
+    		i_p_t := 'passport';
+    		i_p_n := 'alok19990';
 
-    insert into Customer 
-    values
-    (   n_cust ,
-        f_name,
-        l_name ,
-        d_o_b,
-        gen ,
-        h_n ,
-        st,
-        ct ,
-        p_c ,
-        sta ,
-        e ,
-        p_n ,
-        i_p_t ,
-        i_p_n
-    );
+    		insert into Customer 
+    		values
+    		(   
+		n_cust ,
+        	f_name,
+        	l_name ,
+        	d_o_b,
+        	gen ,
+        	h_n ,
+        	st,
+        	ct ,
+        	p_c ,
+        	sta ,
+        	e ,
+        	p_n ,
+        	i_p_t ,
+        	i_p_n
+    		);
 
-    pass_ := 'Abcdefg001';
-    insert into SSID
-    values
-    (   
-        n_cust,
-        pass_
-    );
+    		pass_ := 'Abcdefg001';
+    		insert into SSID
+    		values
+    		(   
+        	n_cust,
+        	pass_
+    		);
 
-    acc_id := 1004;
-    acc_type := 'Retirement Account';
-    acc_status := 'open';
-    insert into User_account
-    values
-    (
-        acc_id,
-        n_cust,
-        acc_type,
-        acc_status
-    );
-end;
+    		acc_id := 1004;
+    		acc_type := 'Retirement Account';
+    		acc_status := 'open';
+    		insert into User_account
+    		values
+    		(
+        	acc_id,
+        	n_cust,
+        	acc_type,
+        	acc_status
+    		);
+	end;
 
 		
 	
@@ -274,7 +318,7 @@ begin
 
 		when 'n' then
 			sign_up();
-			-- dbms_output.put_line('no');
+			dbms_output.put_line('no');
 
 
 		else
@@ -307,8 +351,8 @@ exception
 		dbms_output.put_line('Check Code once again');
 		err_num:= sqlcode;
 		err_msg:= substr(sqlerrm,1,100);
-		-- insert into errors
-		-- values(err_num,err_msg);
+		insert into errors
+		values(err_num,err_msg);
 		
 end;
 /
