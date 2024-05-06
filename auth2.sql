@@ -86,9 +86,9 @@ declare
 			amt := 100;
 			
 			open c10(u_id);
-			loop
-				fetch c10 into rec;
-				exit when c10%found;
+				loop
+    				fetch c10 into rec;
+    				exit when c10%notfound; -- Exit the loop when no records are found
 			end loop;
 			 
 			if c10%found then
@@ -245,7 +245,7 @@ declare
 
 
 	begin
-		pa_r := aconfig_id;
+		pa_r := 1001;
 		py_r := 1002;
 		amt := 100;
 		
@@ -291,7 +291,7 @@ declare
 		t_id := rec_t + 1;
 		pa_r := aconfig_id;
 		py_r := 1001;
-		amt := 10000;
+		amt := 100;
 		
 
 		t_y := 'Account';
@@ -536,39 +536,39 @@ declare
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('A');
+		choice_m char(1) := upper('E');
 		demo number;
 	begin     
 		
 		case choice_m
 			when 'A' then 
-				dbms_output.put_line('Fixed Deposit');
+				dbms_output.put_line('Fixed Deposit successful');
 				f_d_in();
 			
 			when 'B' then
-				dbms_output.put_line('Loans');
+				dbms_output.put_line('Loan sanctioned!');
 				loans_in();
 
 			when 'C' then
 				dbms_output.put_line(demo);
 				if (demo = 1) then 
-					dbms_output.put_line('Saving Account');
+					dbms_output.put_line('Saving Account created!');
 					sav_acc_in();
 				else
 					raise sav_acc_err;
 				end if;
 		
 			when 'D' then
-				dbms_output.put_line('Transaction History');
+				dbms_output.put_line('Here''s the Transaction History!');
 				t_his();
 		
 			when 'E' then 
-				dbms_output.put_line('Money Transfer To Account');
+				dbms_output.put_line('Money Transfer To Accountsuccess!');
 				m_trans();
 				
 				
 			when 'F' then 
-				dbms_output.put_line('UPI Transaction');
+				dbms_output.put_line('UPI Transaction successfull!');
 				upi_in();
 				
 			else
