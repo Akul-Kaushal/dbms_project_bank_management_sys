@@ -34,9 +34,9 @@ insert into Money_account values (1002, 1001, 300.00);
 insert into Money_account values (1003, 1001, 800.00);
 
 -- Data for T_history table
-insert into T_history values (1001, 1001, 1002, 200.00, 'UPI', SYSTIMESTAMP);
-insert into T_history values (1002, 1002, 1003, 150.00, 'Account', SYSTIMESTAMP);
-insert into T_history values (1003, 1001, 1001, 300.00, 'UPI', SYSTIMESTAMP);
+insert into T_history values (5001, 1001, 1002, 200.00, 'UPI', SYSTIMESTAMP);
+insert into T_history values (5002, 1002, 1003, 150.00, 'Account', SYSTIMESTAMP);
+insert into T_history values (5003, 1001, 1001, 300.00, 'UPI', SYSTIMESTAMP);
 
 -- Data for UPI table
 insert into UPI values ('john.doe@oksbi', 1000.00);
