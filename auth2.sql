@@ -343,18 +343,23 @@ declare
 	begin
 		
 		
-		acc_id := aconfig_id;
-		fd_id := 1004;
+		acc_id := 1001;
+		fd_id := 1006;
 		amt := 100000.00;
 		i_r := 7.20;
-		
+		tenure := 15;
+		s_d := sysdate;
+		m_d := ADD_MONTHS(s_d, tenure);
 
-		insert into Fixed_deposit (deposit_id, amount, interest_rate)
+		insert into Fixed_deposit (deposit_id, amount, interest_rate, tenure, start_date, maturity_date)
 		values
 		(
 				fd_id,
 				amt,
-				i_r	
+				i_r,
+				tenure,
+				s_d,
+				m_d	
 		);
 	end;
 
@@ -531,7 +536,7 @@ declare
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('c');
+		choice_m char(1) := upper('A');
 		demo number;
 	begin     
 		

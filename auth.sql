@@ -312,7 +312,7 @@ declare
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('B');
+		choice_m char(1) := upper('A');
 		demo number;
 	begin     
 		
