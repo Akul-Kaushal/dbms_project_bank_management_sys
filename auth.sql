@@ -130,6 +130,41 @@ declare
     		);     
 	end;
 
+	procedure loans_in is
+		l_id Loans.loan_id%type;
+		acc_id Loans.account_id%type;
+		amt Loans.amount%type;
+		i_r Loans.interest_rate%type;
+		dur Loans.duration%type;
+		r_bal Loans.r_balance%type;
+		p_freq Loans.p_frequency%type;
+		pay number;		
+		
+		rec Loans%rowtype;
+	begin
+		pay := 8000;
+		l_id := 3014;
+		acc_id := 1001;
+		amt := 50000;
+		i_r := 3.25;
+		dur := 10;
+		r_bal := amt - pay;
+		p_freq := 'month';
+		
+		dbms_output.put_line('payment of 8000 successful');		
+
+		insert into Loans (loan_id, account_id, amount, interest_rate, duration, r_balance, p_frequency) 
+		values (
+			l_id,
+			acc_id,
+			amt,
+			i_r,
+			dur,
+			r_bal,
+			p_freq
+		);
+	end;
+
 	procedure password_check(login_arg in number) is
     		password_var SSID.password_%type;
 		rec2 SSID%rowtype;
@@ -277,7 +312,7 @@ declare
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('a');
+		choice_m char(1) := upper('B');
 		demo number;
 	begin     
 		
@@ -288,6 +323,7 @@ declare
 			
 			when 'B' then
 				dbms_output.put_line('Loans');
+				loans_in();
 
 			when 'C' then
 				dbms_output.put_line('Saving Account');
