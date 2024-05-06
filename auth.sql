@@ -77,72 +77,58 @@ declare
 	end;
 
 	
+
+	procedure f_d_in is 
+    		fd_id Fixed_deposit.deposit_id%type;
+       		amt Fixed_deposit.amount%type;
+    		i_r Fixed_deposit.interest_rate%type;
+    		tenure Fixed_deposit.tenure%type;
+       		acc_id Fixed_deposit.account_id%type;
+    		s_t Fixed_deposit.status_%type; -- Check the column name
+    
+    		rec Fixed_deposit%rowtype;
+	begin   
+    		acc_id := 1001;
+    		fd_id := 1005;
+    		amt := 100000.00;
+    		i_r := 7.20;
+    		tenure := 15;
+    		s_t := 'active'; -- Check the column name
+    
+    		insert into Fixed_deposit (account_id, deposit_id, amount, interest_rate, tenure, status_)
+    		values
+    		(
+        		acc_id,
+        		fd_id,
+        		amt,
+        		i_r,
+          		tenure,
+        		s_t   
+    		);     
+	end;
 	
-	procedure f_d_in is 
-		fd_id Fixed_deposit.deposit_id%type;
-		s_d Fixed_deposit.start_date%type;
-		amt Fixed_deposit.amount%type;
-		i_r Fixed_deposit.interest_rate%type;
-		tenure Fixed_deposit.tenure%type;
-		m_d Fixed_deposit.maturity_date%type;
-		acc_id Fixed_deposit.account_id%type;
-		status Fixed_deposit.status_%type;
-
-		rec Fixed_deposit%rowtype;
-	begin
-		
-		
-		acc_id := aconfig_id;
-		fd_id := 1004;
-		amt := 100000.00;
-		i_r := 7.20;
-		
-
-		insert into Fixed_deposit (deposit_id, amount, interest_rate)
-		values
-		(
-				fd_id,
-				amt,
-				i_r	
-			);
+	procedure sav_acc_in is 
+    		sav_acc_id Saving_account.saving_account_id%type;
+       		bal Saving_account.balance%type;
+    		o_d Saving_account.open_date%type;
+       		acc_id Fixed_deposit.account_id%type;
+    		s_t Saving_account.status_%type;
+    
+    		rec Saving_account%rowtype;
+	begin   
+    		sav_acc_id := 200007;
+    		acc_id := 1001;
+    		bal := 100000.00;
+    		s_t := 'open';
+    
+    		insert into Saving_account (saving_account_id, balance, status_)
+    		values
+    		(
+        		sav_acc_id,
+			balance,
+			s_t 
+    		);     
 	end;
-
-
-	procedure f_d_in is 
-		fd_id Fixed_deposit.deposit_id%type;
-		s_d Fixed_deposit.start_date%type;
-		amt Fixed_deposit.amount%type;
-		i_r Fixed_deposit.interest_rate%type;
-		tenure Fixed_deposit.tenure%type;
-		m_d Fixed_deposit.maturity_date%type;
-		acc_id Fixed_deposit.account_id%type;
-		status Fixed_deposit.status_%type;
-
-		rec Fixed_deposit%rowtype;
-	begin
-		
-		
-		acc_id := aconfig_id;
-		fd_id := 1005;
-		amt := 100000.00;
-		i_r := 7.20;
-		tenure := 15;
-		s_d := to_char(sysdate, 'yyyy-mm-dd');
-		m_d := to_char(sysdate+15,'yyyy-mm-dd');
-		
-			insert into Fixed_deposit (deposit_id, amount, interest_rate, start_date, tenure, maturity_date)
-			values
-			(
-				fd_id,
-				amt,
-				i_r,
-				s_d,
-				tenure,
-				m_d	
-			);
-				
-	end;
-
 
 	procedure password_check(login_arg in number) is
     		password_var SSID.password_%type;
@@ -291,14 +277,14 @@ declare
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('d');
+		choice_m char(1) := upper('a');
 		demo number;
 	begin     
 		
 		case choice_m
 			when 'A' then 
 				dbms_output.put_line('Fixed Deposit');
-				-- f_d_in();
+				f_d_in();
 			
 			when 'B' then
 				dbms_output.put_line('Loans');
