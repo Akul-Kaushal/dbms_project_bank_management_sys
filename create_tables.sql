@@ -122,14 +122,14 @@ create table UPI_link
 	upi_id varchar(20),
 	constraint up_l_fk_1 
 	foreign key(upi_id) references UPI(upi_id),
-	account_id number(4),
+	account_id number(4) constraint upi_link_ch_acc_id unique,
 	constraint up_l_fk_2
 	foreign key(account_id) references User_account(account_id)
 );
 
 create table UPI_SSID
 (
-	upi_id varchar(20),
+	upi_id varchar(20) constraint upi_ss_uq_id unique,
 	constraint up_ss_fk 
 	foreign key(upi_id) references UPI(upi_id),
 	password_ varchar(30),
