@@ -178,10 +178,10 @@ declare
     		values
     		(
         		sav_acc_id,
-			acc_id,
-			bal,
-			sysdate,
-			s_t 
+				acc_id,
+				bal,
+				sysdate,
+				s_t 
     		);     
 	end;
 	
@@ -536,7 +536,7 @@ declare
 	
 
 	procedure menu is	
-		choice_m char(1) := upper('E');
+		choice_m char(1) := upper('C');
 		demo number;
 	begin     
 		
