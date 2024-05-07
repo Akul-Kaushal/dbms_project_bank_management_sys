@@ -10,6 +10,9 @@ Designed to focus on operational efficiency and user satisfaction, the system ut
 
 - [@hunt3r1009i](https://github.com/Akul-Kaushal)
 
+-[@siddharth](https://github.com/siddharthrajs)
+
+-[@dhwani](https://github.com/Dhwanigoyal)
 
 ## Contributing
 
